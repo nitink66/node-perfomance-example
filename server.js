@@ -1,5 +1,6 @@
 const express = require('express');
 const cluster = require('cluster');
+const os = require('os');
 
 const app = express();
 
@@ -31,8 +32,11 @@ console.log('Running server.js...');
 if (cluster.isMaster) {
     console.log('Master Process has been started');
     // fork creates workers
-    cluster.fork();
-    cluster.fork();
+    // maximizing the performance of our server based on the amount of CPU cores in our machine.
+    const NUM_OF_WORKERS = os.cpus().length;
+    for (i = 0; i < NUM_OF_WORKERS; i++) {
+        cluster.fork();
+    }
 } else {
     // divide incoming requests with worker
     //  workers have same server code
